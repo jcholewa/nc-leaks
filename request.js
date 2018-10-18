@@ -1,46 +1,47 @@
 const https = require('https');
-const fs = require('fs')
-const {exec} = require('child_process')
+const fs = require('fs');
 
 const options = {
   hostname: 'nc-leaks.herokuapp.com',
-  path: '/api/people', 
+  path: '/api/people',
   method: 'GET',
   header: {
   }
 }
 
 const req = https.request(options, (res) => {
-    let body = "";
+  let body = "";
 
-    res.on("data", data => {
-        body += data.toString();
-    })
+  res.on("data", data => {
+    body += data.toString();
+  })
 
-  
-    res.on("end", () => {
+  res.on("end", () => {
 
-        fs.writeFile('people.js', body, (err) => {
-          if (err) console.log(err, '<<<<err')
-          getFile('people.js', (error, people) => {
-            let northcodersArr = [];
-           people.people.forEach((person) => {
-              if (person.job.workplace === 'northcoders') {
-                northcodersArr.push(JSON.stringify(person));
-                fs.writeFile('northcoders.js', northcodersArr, (err) => {
-                  if(err) console.log(err);
-                  
-                })
-              }
-              
-            })
-              
-        //     cb(null, `File contents of ${filename}`);
+    fs.writeFile('people.js', body, (err) => {
+      if (err) console.log(err, '<<<<err')
+      getFile('people.js', (error, { people }) => {
+        const northcoderPeople = people.filter(person => {
+          return person.job.workplace === "northcoders";
+        })
+        fs.writeFile('northcoders.json', JSON.stringify(northcoderPeople,null,2), (err) => {
+          if (err) console.log(err);
+        })
+        //get usernames off array
+          //forEach on the array
+            //get Interests
+              //Option 1
+                //save each interest into array
+                //once all information is back
+                //save an interests.json file
+              //Option 2
+                //foreach response we save down an individual file for each username
 
-          })
-        });
+                //fs.readFile(`${username}.json` () =)
       })
-    })
+    });
+  })
+})
 
 
 
@@ -61,6 +62,22 @@ function getFile(filename, cb) {
     //console.log(typeof people)
     const parsedPeople = JSON.parse(people);
 
+    cb(null, parsedPeople)
+  })
+};
+
+fs.readFile('northcoders.js', 'utf8', (err, usernames) => {
+  if (err) console.log(err, '<<<<err')
+
+});
+
+function getFile(filename, cb) {
+  fs.readFile(filename, 'utf8', (err, people) => {
+    if (err) {
+      console.log(err);
+      return cb(err)
+    }
+    const parsedPeople = JSON.parse(people);
     cb(null, parsedPeople)
   })
 };
