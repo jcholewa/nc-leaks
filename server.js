@@ -15,9 +15,15 @@ const server = http.createServer((request, response) => {
       getNorthcoders(response);
     };
   }; 
-  // if (request.url === `/api/northcoders/users`) {
-  //   getUsername(response);
-  // }; 
+  const regEx = /northcoders\/\w+/gi;
+  let matches = regEx.test(request.url);
+  if (matches) {
+    const splitUrl = request.url.split('/');
+    let lastIndex = splitUrl.length-1;
+    let userPath = splitUrl[lastIndex];
+    console.log(userPath);
+    // getUsername(response);
+  }; 
 });
 
 function getNorthcoders(response) {
