@@ -26,8 +26,17 @@ const req = https.request(options, (res) => {
         })
         fs.writeFile('northcoders.json', JSON.stringify(northcoderPeople,null,2), (err) => {
           if (err) console.log(err);
-        })
-        //get usernames off array
+          fs.readFile('northcoders.json', 'utf-8', (err, coders) => {
+            if (err) console.log(err);
+            const parsedCoders = JSON.parse(coders);
+            const userNames = parsedCoders.map(coder => {
+              return coder.username; 
+            });    
+            fs.writeFile('usernames.json', JSON.stringify(userNames, null, 2), (err) => {
+              if (err) console.log(err);
+            });
+          });
+        });
           //forEach on the array
             //get Interests
               //Option 1
